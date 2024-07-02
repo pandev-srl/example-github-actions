@@ -40,6 +40,9 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          build-args: |
+            BUILD_VERSION=v${{steps.meta.outputs.tags[0]}}
+            BUILD_REF=v${{steps.meta.outputs.tags[1]}}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           outputs: type=docker,dest=/tmp/cache.tar
@@ -79,13 +82,17 @@ jobs:
           images: ghcr.io/pandev-srl/example-node-expressjs
           tags: |
             type=raw,value=v${{github.run_number}}
-            type=raw,value=v${{github.run_number}}-{{date 'x'}}
-            type=sha,format=short,prefix=rev-,suffix={{date 'x'}}
+            type=sha,format=short,prefix=rev-
+            type=raw,value=v${{github.run_number}}-app1-{{date 'x'}}
+            type=sha,format=short,prefix=rev-,suffix=app1-{{date 'x'}}
       - name: Retag images for app1
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: Dockerfile
-          pull: true
+          ontext: .
+          file: ./Dockerfile
+          build-args: |
+            BUILD_VERSION=v${{steps.meta.outputs.tags[0]}}
+            BUILD_REF=v${{steps.meta.outputs.tags[1]}}
           push: true
+          pull: true
           tags: ${{ steps.meta.outputs.tags }}
