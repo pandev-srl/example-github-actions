@@ -33,7 +33,7 @@ jobs:
           images: ghcr.io/pandev-srl/example-node-expressjs
           tags: |
             type=raw,value=v${{github.run_number}}
-            type=sha,format=short,prefix=ref
+            type=sha,format=short,prefix=rev-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
