@@ -42,6 +42,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
+          provenance: false
           file: ./Dockerfile
           build-args: |
             BUILD_VERSION=v${{ fromJSON(steps.meta.outputs.json).tags[0] }}
@@ -78,16 +79,16 @@ jobs:
             type=raw,value=v${{github.run_number}}-app1-{{date 'x'}}
             type=sha,format=short,prefix=rev-,suffix=app1-{{date 'x'}}
       - name: Retag images for app1
-        # run: |
-        # docker pull
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64
+          provenance: false
           file: ./Dockerfile
           build-args: |
             BUILD_VERSION=v${{ fromJSON(steps.meta.outputs.json).tags[0] }}
             BUILD_REF=v${{ fromJSON(steps.meta.outputs.json).tags[1] }}
           push: true
-          pull: true
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/pandev-srl/example-node-expressjs:release-cache
+          cache-to: type=registry,ref=ghcr.io/pandev-srl/example-node-expressjs:release-cache,mode=max
