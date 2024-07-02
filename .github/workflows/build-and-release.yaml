@@ -12,10 +12,9 @@ permissions:
   contents: read # This is required for actions/checkout
   packages: write # This is required to access container registry
 
-# type=raw,value=v${{github.run_number}}-{{date 'x'}}
 jobs:
   build:
-    name: Build production docker image
+    name: Build production image
     runs-on: ubuntu-latest
     steps:
       - name: Clone whole repository
@@ -39,5 +38,27 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  release-app1:
+    name: Release production image for App1
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/pandev-srl/example-node-expressjs
+          tags: |
+            type=raw,value=v${{github.run_number}}
+            type=raw,value=v${{github.run_number}}-{{date 'x'}}
+            type=sha,format=short,prefix=rev-,suffix={{date 'x'}}
+      - name: Retag images for
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
