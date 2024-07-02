@@ -81,7 +81,7 @@ jobs:
             type=sha,format=short,prefix=rev-,suffix=app1-{{date 'x'}}
       - name: Retag images for app1
         run: |
-          docker pull ghcr.io/pandev-srl/example-node-expressjs:${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          docker pull ghcr.io/pandev-srl/example-node-expressjs:${{ fromJSON(steps.meta.outputs.json).tags[1] }}
-          docker push ghcr.io/pandev-srl/example-node-expressjs:${{ fromJSON(steps.meta.outputs.json).tags[2] }}
-          docker push ghcr.io/pandev-srl/example-node-expressjs:${{ fromJSON(steps.meta.outputs.json).tags[3] }}
+          docker pull ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          docker pull ${{ fromJSON(steps.meta.outputs.json).tags[1] }}
+          docker push ${{ fromJSON(steps.meta.outputs.json).tags[2] }}
+          docker push ${{ fromJSON(steps.meta.outputs.json).tags[3] }}
