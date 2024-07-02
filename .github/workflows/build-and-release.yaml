@@ -40,8 +40,10 @@ jobs:
       - name: Build and push
         run: |
           docker build -t app-image .
-          docker tag app-image ${{ fromJSON(steps.meta.outputs.json).tags[0] }} .
-          docker tag app-image ${{ fromJSON(steps.meta.outputs.json).tags[1] }} .
+          docker tag app-image ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          docker tag app-image ${{ fromJSON(steps.meta.outputs.json).tags[1] }}
+          docker push ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          docker push ${{ fromJSON(steps.meta.outputs.json).tags[1] }}
         # uses: docker/build-push-action@v6
         # with:
         #   context: .
