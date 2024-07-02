@@ -51,6 +51,7 @@ jobs:
 
   release-app1:
     name: Release production image for App1
+    environment: App1-Production
     needs: [build]
     runs-on: ubuntu-latest
     steps:
