@@ -1,0 +1,45 @@
+name: "Service builder"
+description: This action builds a service docker image
+inputs:
+  image:
+    description: "The registry/repository path where to push built image"
+    required: true
+  service-name:
+    required: true
+  service-context:
+    required: true
+  service-dockerfile:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone whole repository
+      uses: actions/checkout@v4
+    - name: Configure aws credentials
+      uses: ./.github/actions/aws-setup/
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{inputs.image}}
+        tags: |
+          type=raw,value=v${{github.run_number}}
+          type=sha,format=short,prefix=rev-
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{inputs.service-context}}
+        file: ${{inputs.service-dockerfile}}
+        build-args: |
+          BUILD_VERSION=b${{github.run_number}}
+          BUILD_REF=v${{ fromJSON(steps.meta.outputs.json).tags[1] }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+    - name: Tag build
+      uses: rickstaa/action-create-tag@v1
+      with:
+        tag: ${{inputs.service-name}}-v${{github.run_number}}
+        tag_exists_error: true
+        message: "Service release"

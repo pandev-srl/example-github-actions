@@ -1,0 +1,27 @@
+name: Example Service Build
+
+on:
+  # push:
+  #   branches:
+  #     - cicd/injection-service
+  workflow_dispatch: {}
+env:
+  AWS_REGION: "eu-west-1"
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: write # This is required for actions/checkout
+jobs:
+  build:
+    name: Build production release image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone whole repository
+        uses: actions/checkout@v4
+      - name: Build service
+        uses: ./.github/actions/service-builder/
+        with:
+          image: ghcr.io/pandev-srl/example-node-expressjs
+          service-name: example-service
+          service-context: .
+          service-dockerfile: ./Dockerfile

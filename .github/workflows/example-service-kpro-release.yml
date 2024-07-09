@@ -1,0 +1,25 @@
+name: Example Service KPro Release
+
+on:
+  # push:
+  #   branches:
+  #     - cicd/injection-service-release
+  workflow_dispatch: {}
+env:
+  AWS_REGION: "eu-west-1"
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read
+jobs:
+  release:
+    name: Release production image for KPro
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone whole repository
+        uses: actions/checkout@v4
+      - name: Release service
+        uses: ./.github/actions/service-releaser/
+        with:
+          image: ghcr.io/pandev-srl/example-node-expressjs
+          app-name: kpro

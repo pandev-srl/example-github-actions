@@ -1,0 +1,11 @@
+name: "AWS Setup"
+description: This action sets up aws authentcation for pipeline steps
+runs:
+  using: "composite"
+  steps:
+    - name: Configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::590183995998:role/kpro-prod-iam-injection-service-role
+        role-session-name: kpro-prod-iam-injection-service-role
+        aws-region: ${{ env.AWS_REGION }}

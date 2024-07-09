@@ -1,0 +1,38 @@
+name: "Service releases"
+description: This action releases a service docker image
+inputs:
+  image:
+    description: "The registry/repository path where to push built image"
+    required: true
+  app-name:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Clone whole repository
+      uses: actions/checkout@v4
+    - name: Configure aws credentials
+      uses: ./.github/actions/aws-setup/
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
+    - name: Clone whole repository
+      uses: actions/checkout@v4
+    - name: Configure aws credentials
+      uses: ./.github/actions/aws-setup/
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    - name: Setup docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{inputs.image}}
+        tags: |
+          type=raw,value=r${{github.run_number}}-${{inputs.app-name}}-{{date 'x'}}
+          type=sha,format=short,prefix=rev-
+    - name: Retag image for KPro
+      shell: bash
+      run: |
+        docker pull ${{ fromJSON(steps.meta.outputs.json).tags[1] }}
+        docker tag ${{ fromJSON(steps.meta.outputs.json).tags[1] }} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+        docker push ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
