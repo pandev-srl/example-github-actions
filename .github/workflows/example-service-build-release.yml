@@ -29,6 +29,7 @@ jobs:
   release-kpro:
     name: Release production image for KPro
     needs: [build]
+    environment: App1-Production
     runs-on: ubuntu-latest
     steps:
       - name: Clone whole repository
